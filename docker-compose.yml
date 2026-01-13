@@ -1,0 +1,18 @@
+services:
+  relay29:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${PORT:-5577}:${PORT:-5577}"
+    volumes:
+      - ./data:/app/db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:${PORT:-5577}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

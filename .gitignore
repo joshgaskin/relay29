@@ -1,4 +1,12 @@
+# Environment files
 .env
+.env.live
+.env.testing
+
+# Database
 db
+data
+
+# Build artifacts
 relay29
 groups.0xchat.com/nip29
