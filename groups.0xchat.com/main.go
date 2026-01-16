@@ -40,8 +40,9 @@ var (
 )
 
 var (
-	kingRole   = &nip29.Role{Name: "king", Description: "the group's max top admin"}
-	bishopRole = &nip29.Role{Name: "bishop", Description: "the group's noble servant"}
+	adminRole     = &nip29.Role{Name: "admin", Description: "the group's max top admin"}
+	moderatorRole = &nip29.Role{Name: "moderator", Description: "the group's noble servant"}
+	memberRole    = &nip29.Role{Name: "member", Description: "townsman"}
 )
 
 func main() {
@@ -66,17 +67,17 @@ func main() {
 		Domain:                  s.Domain,
 		DB:                      db,
 		SecretKey:               s.RelayPrivkey,
-		DefaultRoles:            []*nip29.Role{kingRole, bishopRole},
-		GroupCreatorDefaultRole: kingRole,
+		DefaultRoles:            []*nip29.Role{adminRole, moderatorRole, memberRole},
+		GroupCreatorDefaultRole: adminRole,
 	})
 
 	// setup group-related restrictions
 	state.AllowAction = func(ctx context.Context, group nip29.Group, role *nip29.Role, action relay29.Action) bool {
-		if role == kingRole {
+		if role == adminRole {
 			// owners can do everything
 			return true
 		}
-		if role == bishopRole {
+		if role == moderatorRole {
 			// admins can invite new users, delete people and messages
 			switch action.(type) {
 			case relay29.RemoveUser:
