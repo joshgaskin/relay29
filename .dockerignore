@@ -1,0 +1,15 @@
+# Database files (LMDB sparse files can be huge)
+data/
+*.mdb
+
+# Git
+.git/
+
+# Docker files (not needed in build context)
+docker-compose.yml
+.dockerignore
+
+# IDE and OS
+.idea/
+.vscode/
+.DS_Store
