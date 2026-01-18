@@ -78,17 +78,20 @@ func main() {
 			return true
 		}
 		if role == moderatorRole {
-			// admins can invite new users, delete people and messages
-			switch action.(type) {
-			case relay29.RemoveUser:
-				return true
-			case relay29.DeleteEvent:
-				return true
-			case relay29.PutUser:
-				return true
-			}
+			// moderators can do everything
+			return true
 		}
-		// no one else can do anything else
+
+		switch a := action.(type) {
+		case relay29.EditMetadata:
+			// other members can edit metadata
+			return true
+		case relay29.RemoveUser:
+			// other members can only remove themselves, not others
+			authedUser := state.GetAuthed(ctx)
+			return len(a.Targets) == 1 && a.Targets[0] == authedUser
+		}
+
 		return false
 	}
 
