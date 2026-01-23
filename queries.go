@@ -32,15 +32,19 @@ func (s *State) MetadataQueryHandler(ctx context.Context, filter nostr.Filter) (
 					}
 
 					evt := group.ToMetadataEvent()
-					evt.Sign(s.secretKey)
-					ch <- evt
+					if matchesTimestampFilters(filter, evt) {
+						evt.Sign(s.secretKey)
+						ch <- evt
+					}
 				}
 			} else {
 				for _, groupId := range filter.Tags["d"] {
 					if group, _ := s.Groups.Load(groupId); group != nil {
 						evt := group.ToMetadataEvent()
-						evt.Sign(s.secretKey)
-						ch <- evt
+						if matchesTimestampFilters(filter, evt) {
+							evt.Sign(s.secretKey)
+							ch <- evt
+						}
 					}
 				}
 			}
@@ -76,8 +80,10 @@ func (s *State) AdminsQueryHandler(ctx context.Context, filter nostr.Filter) (ch
 						continue
 					}
 					evt := group.ToAdminsEvent()
-					evt.Sign(s.secretKey)
-					ch <- evt
+					if matchesTimestampFilters(filter, evt) {
+						evt.Sign(s.secretKey)
+						ch <- evt
+					}
 				}
 			} else {
 				for _, groupId := range filter.Tags["d"] {
@@ -97,8 +103,10 @@ func (s *State) AdminsQueryHandler(ctx context.Context, filter nostr.Filter) (ch
 							continue
 						}
 						evt := group.ToAdminsEvent()
-						evt.Sign(s.secretKey)
-						ch <- evt
+						if matchesTimestampFilters(filter, evt) {
+							evt.Sign(s.secretKey)
+							ch <- evt
+						}
 					}
 				}
 			}
@@ -134,8 +142,10 @@ func (s *State) MembersQueryHandler(ctx context.Context, filter nostr.Filter) (c
 						continue
 					}
 					evt := group.ToMembersEvent()
-					evt.Sign(s.secretKey)
-					ch <- evt
+					if matchesTimestampFilters(filter, evt) {
+						evt.Sign(s.secretKey)
+						ch <- evt
+					}
 				}
 			} else {
 				for _, groupId := range filter.Tags["d"] {
@@ -155,8 +165,10 @@ func (s *State) MembersQueryHandler(ctx context.Context, filter nostr.Filter) (c
 							continue
 						}
 						evt := group.ToMembersEvent()
-						evt.Sign(s.secretKey)
-						ch <- evt
+						if matchesTimestampFilters(filter, evt) {
+							evt.Sign(s.secretKey)
+							ch <- evt
+						}
 					}
 				}
 			}
@@ -187,8 +199,10 @@ func (s *State) RolesQueryHandler(ctx context.Context, filter nostr.Filter) (cha
 						}
 					}
 					evt := group.ToRolesEvent()
-					evt.Sign(s.secretKey)
-					ch <- evt
+					if matchesTimestampFilters(filter, evt) {
+						evt.Sign(s.secretKey)
+						ch <- evt
+					}
 				}
 			} else {
 				for _, groupId := range filter.Tags["d"] {
@@ -203,8 +217,10 @@ func (s *State) RolesQueryHandler(ctx context.Context, filter nostr.Filter) (cha
 							}
 						}
 						evt := group.ToRolesEvent()
-						evt.Sign(s.secretKey)
-						ch <- evt
+						if matchesTimestampFilters(filter, evt) {
+							evt.Sign(s.secretKey)
+							ch <- evt
+						}
 					}
 				}
 			}
@@ -280,4 +296,14 @@ func hasOneOfTheseAdmins(group nip29.Group, pubkeys []string) bool {
 		}
 	}
 	return false
+}
+
+func matchesTimestampFilters(filter nostr.Filter, evt *nostr.Event) bool {
+	if filter.Since != nil && evt.CreatedAt < *filter.Since {
+		return false
+	}
+	if filter.Until != nil && evt.CreatedAt > *filter.Until {
+		return false
+	}
+	return true
 }
