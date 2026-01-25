@@ -77,6 +77,9 @@ func (s *State) RequireKindAndSingleGroupIDOrSpecificEventReference(
 		} else if len(filter.IDs) > 0 {
 			// "ids" specified -- idem
 			return false, ""
+		} else if slices.Contains(filter.Kinds, 39009) {
+			// allow querying 39009 events globally (content is encrypted)
+			return false, ""
 		} else {
 			// other tags are not supported (unless they come together with "h")
 			return true, "invalid query, must have 'h', 'e' or 'a' tag"
