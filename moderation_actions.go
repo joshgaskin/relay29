@@ -145,6 +145,8 @@ type PutUser struct {
 
 func (_ PutUser) Name() string { return "put-user" }
 func (a PutUser) Apply(group *nip29.Group) {
+	group.LastMembersUpdate = a.When
+	group.LastAdminsUpdate = a.When
 	for _, target := range a.Targets {
 		roles := make([]*nip29.Role, 0, len(target.RoleNames))
 		for _, roleName := range target.RoleNames {
@@ -164,6 +166,7 @@ type RemoveUser struct {
 
 func (_ RemoveUser) Name() string { return "remove-user" }
 func (a RemoveUser) Apply(group *nip29.Group) {
+	group.LastMembersUpdate = a.When
 	for _, tpk := range a.Targets {
 		delete(group.Members, tpk)
 	}
