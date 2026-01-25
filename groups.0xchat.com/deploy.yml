@@ -1,0 +1,20 @@
+---
+- name: Deploy relay29
+  hosts: web_servers
+  gather_facts: false
+
+  tasks:
+    - name: Pull latest changes
+      ansible.builtin.shell: git pull
+      args:
+        chdir: ~/services/relay29
+
+    - name: Stop containers
+      ansible.builtin.shell: docker compose down
+      args:
+        chdir: ~/services/relay29
+
+    - name: Build and start containers
+      ansible.builtin.shell: docker compose up -d --build
+      args:
+        chdir: ~/services/relay29
